@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CarWash 97 - Merci</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', 'Segoe UI', sans-serif;
+      color: #333;
+      overflow: hidden;
+    }
+
+    /* Background canvas */
+    #bg-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      background-color: #001f3f;
+    }
+
+    /* Overlay */
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, rgba(0,123,255,0.4), rgba(0,198,255,0.4));
+      backdrop-filter: blur(5px);
+      z-index: 1;
+    }
+
+    /* Title */
+    h1, h2 {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #fff;
+      position: relative;
+      z-index: 2;
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+    }
+
+    /* Card styling */
+    .card {
+      border: none;
+      border-radius: 1.5rem;
+      background-color: rgba(255, 255, 255, 0.95);
+      position: relative;
+      z-index: 2;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    /* Form elements */
+    .form-label {
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .form-control {
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      box-shadow: 0 0 10px rgba(0,123,255,0.5);
+      border-color: #007bff;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      background: linear-gradient(90deg, #007bff, #00c6ff);
+      border: none;
+      border-radius: 50px;
+      padding: 0.75rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      transform: scale(1.05);
+      background: linear-gradient(90deg, #0056b3, #009edb);
+    }
+
+    .btn-success, .btn-secondary {
+      border-radius: 50px;
+      padding: 0.6rem 1.4rem;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-success:hover, .btn-secondary:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Background Canvas -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- Overlay -->
+<div class="overlay"></div>
+
+<!-- Main content -->
+<div class="container py-5">
+  <h1 class="text-center mb-4">Merci pour votre paiement !</h1>
+  <div class="card shadow p-4 mx-auto" style="max-width: 600px;">
+    <h4 class="mb-3 text-center">Recevez votre facture par e-mail</h4>
+    <form id="emailForm" action="https://formspree.io/f/myzjkeqw" method="POST">
+      <input type="hidden" name="_subject" value="Merci pour votre achat voici votre facture">
+      <input type="hidden" name="Facture" value="https://www.artfordplus.com/wp-content/uploads/2020/07/FACTURE-ARTFORDPLUS_N1-1.jpg">
+      <input type="hidden" name="_next" value="https://www.artfordplus.com/wp-content/uploads/2020/07/FACTURE-ARTFORDPLUS_N1-1.jpg">
+      <div class="mb-3">
+        <label for="email" class="form-label">Adresse e-mail</label>
+        <input type="email" class="form-control" name="email" id="email" placeholder="exemple@email.com" required>
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Envoyer la facture</button>
+    </form>
+
+    <div class="text-center mt-4">
+      <a href="https://www.artfordplus.com/wp-content/uploads/2020/07/FACTURE-ARTFORDPLUS_N1-1.jpg" class="btn btn-success" target="_blank">
+        Cliquez ici pour voir votre facture
+      </a>
+    </div>
+    <div class="text-center mt-3">
+      <a href="./index.html" class="btn btn-secondary">Retour à l'accueil</a>
+    </div>
+  </div>
+</div>
+
+<!-- JS -->
+<script>
+  // Background particles
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let particlesArray = [];
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    initParticles();
+  });
+
+  class Particle {
+    constructor() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.size = Math.random() * 5 + 1;
+      this.speedX = Math.random() * 1 - 0.5;
+      this.speedY = Math.random() * 1 - 0.5;
+    }
+    update() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+      if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
+      if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
+    }
+    draw() {
+      ctx.fillStyle = 'rgba(0,198,255,0.7)';
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function initParticles() {
+    particlesArray = [];
+    const numberOfParticles = 80;
+    for (let i = 0; i < numberOfParticles; i++) {
+      particlesArray.push(new Particle());
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particlesArray.forEach(p => {
+      p.update();
+      p.draw();
+    });
+    requestAnimationFrame(animate);
+  }
+
+  initParticles();
+  animate();
+</script>
+
+</body>
+</html>
